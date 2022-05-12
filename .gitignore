@@ -1,0 +1,17 @@
+node_modules
+
+authentication/node_modules
+
+authentication/dist
+
+
+users/node_modules
+
+
+
+users/dist
+
+movies/node_modules
+
+
+movies/dist

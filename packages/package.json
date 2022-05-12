@@ -1,0 +1,34 @@
+{
+  "name": "@enthous/movie",
+  "version": "1.0.0",
+  "description": "Packages movie service",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".":{
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.js"
+    },
+    "./enums": {
+      "default": "./dist/enums/index.js",
+      "types": "./dist/enums/index.d.js"
+    },
+    "./helpers": {
+      "default": "./dist/helpers/index.js",
+      "types": "./dist/helpers/index.d.js"
+    },
+    "./interfaces": {
+      "default": "./dist/interfaces/index.js",
+      "types": "./dist/interfaces/index.d.js"
+    }
+  },
+  "keywords": [],
+  "author": "Wilbert Bocanegra Velazquez",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "tsconfig-paths": "^4.0.0",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "yup": "^0.32.11"
+  }
+}

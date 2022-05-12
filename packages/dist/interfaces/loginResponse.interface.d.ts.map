@@ -1,0 +1,1 @@
+{"version":3,"file":"loginResponse.interface.d.ts","sourceRoot":"","sources":["../../interfaces/loginResponse.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,kBAAkB,CAAC;AAEzC,MAAM,WAAW,cAAe,SAAQ,KAAK;IAC3C,YAAY,EAAE,MAAM,CAAC;CACtB"}
