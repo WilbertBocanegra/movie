@@ -15,3 +15,9 @@ movies/node_modules
 
 
 movies/dist
+
+packages/node_modules
+
+packages/dist
+
+dist
