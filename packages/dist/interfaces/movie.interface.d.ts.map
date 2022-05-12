@@ -1,1 +1,0 @@
-{"version":3,"file":"movie.interface.d.ts","sourceRoot":"","sources":["../../interfaces/movie.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,SAAS,CAAC;AAEhC,MAAM,WAAW,MAAM;IACrB,EAAE,CAAC,EAAE,MAAM,CAAC;IACZ,IAAI,EAAE,MAAM,CAAC;IACb,MAAM,EAAE,KAAK,CAAC;IACd,IAAI,EAAE,MAAM,CAAC;IACb,WAAW,EAAE,MAAM,CAAC;IACpB,IAAI,CAAC,EAAE,KAAK,EAAE,CAAC;CAChB"}
