@@ -1,148 +1,173 @@
 <script lang="ts">
-	import { Navbar, NavLeft, NavRight, List } from '$lib/components';
 	import { goto } from '$app/navigation';
-	import type { IMovie } from '@enthous/movie';
+	import logoEnthous from '$lib/assets/enthous.jpg';
+	import type { IUser } from '@enthous/movie';
+	let isDisable = false;
+	let errorMessage = '';
+	let data: IUser = {
+		email: '',
+		password: '',
+		name: '',
+		lastName: '',
+		gender: 0
+	};
 
-	let movie: IMovie;
+	const handleSubmit = async () => {
+		isDisable = true;
+		try {
+			const req = await fetch('http://localhost:3005/graphql', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					query: `
+					query($data: LoginInput!){
+					login(data: $data){
+						statusCode
+						data {
+							id
+							name
+							lastName
+							email
+							password
+							status
+							rol
+							}
+						message
+						info
+						}
+					}
+					`,
+					variables: { data }
+				})
+			});
+			const res = await req.json();
+			//console.log(res.data.login);
+
+			if (
+				res.data.login.statusCode === '400' ||
+				res.data.login.statusCode === '401' ||
+				res.data.login.statusCode === '500'
+			) {
+				errorMessage = res.data.login.message;
+				setTimeout(() => {
+					errorMessage = '';
+				}, 3000);
+				isDisable = false;
+			}
+			if (res.data.login.statusCode === '200') {
+				goto('/home', { replaceState: true });
+			}
+		} catch (err) {
+			isDisable = false;
+			console.log(err);
+		}
+	};
 </script>
 
-<Navbar>
-	<NavLeft>
-		<label for="panel" tabindex="0" class="btn btn-ghost btn-circle">
+<div>
+	<div
+		class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-300 m-0 absolute	top-2/4	left-1/2	translate-y-[-50%] translate-x-[-50%]"
+	>
+		<div class="card-body">
+			<div class="avatar mx-auto mb-5">
+				<div class="w-28 rounded-full ring ring-info-content ring-offset-base-300 ring-offset-2">
+					<img src={logoEnthous} alt="logo-enthous" />
+				</div>
+			</div>
+			<form on:submit|preventDefault={handleSubmit}>
+				<div class="form-control mb-5">
+					<label for="email" class="label mb-1">
+						<span class="label-text">Correo</span>
+					</label>
+					<input
+						bind:value={data.email}
+						type="text"
+						placeholder="correo"
+						class="input input-bordered"
+						disabled={isDisable}
+					/>
+				</div>
+				<div class="form-control mb-5">
+					<label for="email" class="label mb-1">
+						<span class="label-text">Nombre/s</span>
+					</label>
+					<input
+						bind:value={data.email}
+						type="text"
+						placeholder="correo"
+						class="input input-bordered"
+						disabled={isDisable}
+					/>
+				</div>
+
+				<div class="form-control mb-5">
+					<label for="email" class="label mb-1">
+						<span class="label-text">Apellido/s</span>
+					</label>
+					<input
+						bind:value={data.email}
+						type="text"
+						placeholder="correo"
+						class="input input-bordered"
+						disabled={isDisable}
+					/>
+				</div>
+				<div class="form-control mb-5">
+					<label for="email" class="label mb-1">
+						<span class="label-text">Genero</span>
+					</label>
+					<select class="select select-bordered w-full max-w-xs">
+						<option disabled selected>Seleccionar</option>
+						<option>Mujer</option>
+						<option>Hombre</option>
+					</select>
+				</div>
+				<div class="form-control mb-5">
+					<label for="password" class="label mb-1">
+						<span class="label-text">Contraseña</span>
+					</label>
+					<input
+						bind:value={data.password}
+						type="password"
+						placeholder="contraseña"
+						class="input input-bordered"
+						disabled={isDisable}
+					/>
+				</div>
+				<div class="text-center">
+					<p class="my-5 text-center">
+						<a class="link" href="/">Iniciar Sesión</a>
+					</p>
+				</div>
+				<div class="form-control mt-6">
+					{#if isDisable}
+						<button class="btn loading ">loading</button>
+					{:else}
+						<button type="submit" class="btn btn-primary">aceptar</button>
+					{/if}
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{#if errorMessage}
+	<div class="alert alert-error shadow-lg w-1/5	 absolute right-0 mr-10 mt-10">
+		<div>
 			<svg
-				drawer-button
 				xmlns="http://www.w3.org/2000/svg"
-				class="h-5 w-5"
+				class="stroke-current flex-shrink-0 h-6 w-6"
 				fill="none"
 				viewBox="0 0 24 24"
-				stroke="currentColor"
 				><path
 					stroke-linecap="round"
 					stroke-linejoin="round"
 					stroke-width="2"
-					d="M4 6h16M4 12h16M4 18h7"
+					d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
 				/></svg
 			>
-		</label>
-		<div class="normal-case text-xl ml-5">Movies</div>
-	</NavLeft>
-	<NavRight>
-		<div class="dropdown dropdown-end mr-1">
-			<label for="" tabindex="0" class="btn btn-ghost btn-circle avatar">
-				<div class="w-10 rounded-full">
-					<img src="https://api.lorem.space/image/face?hash=33791" alt="logo avatar" />
-				</div>
-			</label>
-			<ul
-				tabindex="0"
-				class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-300 rounded-box w-52"
-			>
-				<li>
-					<a href={undefined} class="justify-between">
-						Perfil
-						<!--<span class="badge">New</span>-->
-					</a>
-				</li>
-				<li><a href={undefined}>Configuración</a></li>
-				<li>
-					<a on:click={() => goto('/', { replaceState: true })} href={undefined}>Cerrar Sesión</a>
-				</li>
-			</ul>
-		</div>
-	</NavRight>
-</Navbar>
-
-<div class="grid grid-cols-3 gap-2 mt-10">
-	<div class="m-auto h-full relative ">
-		<div class="card w-96 bg-base-300 shadow-xl">
-			<div class="card-body">
-				<div class="normal-case text-xl text-center mb-5">Movie</div>
-
-				<div class="form-control">
-					<label for="" class="label">
-						<span class="label-text">Nombre</span>
-					</label>
-					<input type="text" placeholder="nombre" class="input input-bordered" />
-				</div>
-
-				<div class="form-control">
-					<label for="" class="label">
-						<span class="label-text">Busqueda</span>
-					</label>
-					<input type="text" placeholder="busqueda" class="input input-bordered" />
-				</div>
-				<div class="form-control w-full max-w-xs">
-					<label for="" class="label">
-						<span class="label-text">Autor</span>
-					</label>
-					<select class="select select-bordered">
-						<option disabled selected>Selecciona uno</option>
-						<option>Star Wars</option>
-						<option>Harry Potter</option>
-						<option>Lord of the Rings</option>
-						<option>Planet of the Apes</option>
-						<option>Star Trek</option>
-					</select>
-				</div>
-
-				<div class="form-control">
-					<label for="" class="label">
-						<span class="label-text">Descripción</span>
-					</label>
-					<textarea class="textarea textarea-bordered" placeholder="descripción" />
-				</div>
-				<div class="form-control mt-6">
-					<button class="btn btn-primary">aceptar</button>
-				</div>
-			</div>
+			<span>{errorMessage}</span>
 		</div>
 	</div>
-	<!-- ... -->
-	<div class="col-span-2 relative ">
-		<div class="grid grid-cols-2 gap-8 px-5 h-4/5 fixed overflow-auto">
-			<div>
-				<!-- -->
-				<div class="card w-full bg-base-300">
-					<div class="card-body ">
-						<h2 class="card-title text-center px-14">
-							Los titanes del pacifico una nueva era de jagers
-						</h2>
-
-						<p class="text-xl  font-bold my-5">Autor</p>
-
-						<div class="ml-5">
-							<img
-								alt="logo"
-								class="h-16 mb-5 rounded-full"
-								src="https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=facearea&amp;facepad=4&amp;w=256&amp;h=256&amp;q=80"
-							/>
-							<strong class="text-slate-900 text-xs font-medium dark:text-slate-200 text-white"
-								>Wilbert Bocanegra Velazquez</strong
-							>
-						</div>
-
-						<!--<div class="card-actions justify-end">
-							<button class="btn">Buy Now</button>
-						</div>-->
-						<div class="collapse collapse-arrow my-5">
-							<input type="checkbox" class="peer" />
-							<div class="collapse-title ">
-								<p class=" text-xl  font-bold">Descripción de la pelicula</p>
-							</div>
-							<div class="collapse-content ">
-								<p class="text-justify pb-5">
-									Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero eveniet molestias
-									recusandae ratione veritatis veniam, sequi laudantium velit maxime magnam
-									cupiditate nostrum similique exercitationem rerum quae soluta. Voluptate, vero
-									adipisci!
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- -->
-			</div>
-		</div>
-	</div>
-</div>
+{/if}

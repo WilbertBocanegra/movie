@@ -97,9 +97,9 @@
 						disabled={isDisable}
 					/>
 				</div>
-				<label for="sign-ing my-5 text-center">
-					<a class="link " href={undefined}>Registrarme</a>
-				</label>
+				<p class="my-5 text-center">
+					<a class="link" href="sign-ing">Registrarme</a>
+				</p>
 				<div class="form-control mt-6">
 					{#if isDisable}
 						<button class="btn loading ">loading</button>
