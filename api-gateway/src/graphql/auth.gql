@@ -1,0 +1,41 @@
+type Query {
+  login(data: LoginInput!): ResponseLoginType
+}
+
+type Mutation {
+  login: String
+}
+
+type UserType {
+  id: String
+  name: String
+  lastName: String
+  email: String
+  password: String
+  status: Int
+  rol:[RolEnum]
+  access_token: String
+}
+
+interface IResponse {
+  statusCode: String!
+  message: String
+  info: String!
+}
+
+type ResponseLoginType implements IResponse {
+  statusCode: String!
+  data: UserType
+  message: String
+  info: String!
+}
+
+input LoginInput {
+  email: String
+  password: String
+}
+
+enum RolEnum {
+  USER 
+  ADMIN 
+}

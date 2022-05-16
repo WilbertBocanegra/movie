@@ -3,9 +3,13 @@ import { UpdateController } from './update.controller';
 import { UpdateService } from './update.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MovieEntity } from '../entity/movie.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [MikroOrmModule.forFeature({ entities: [MovieEntity] })],
+  imports: [
+    ConfigModule,
+    MikroOrmModule.forFeature({ entities: [MovieEntity] }),
+  ],
   controllers: [UpdateController],
   providers: [UpdateService],
 })

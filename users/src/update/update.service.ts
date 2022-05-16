@@ -30,8 +30,7 @@ export class UpdateService {
         },
       );
 
-      const userUpdate = await this.userRepository.assign(user, {
-        id: user.id,
+      const userUpdate = this.userRepository.assign(user, {
         email: user.email,
         ...data,
       });

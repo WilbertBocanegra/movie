@@ -1,0 +1,13 @@
+{
+  "$schema": "https://deno.land/x/denon@2.5.0/schema.json",
+  "scripts": {
+    "dev": {
+      "cmd": "deno run mod.ts",
+      "desc": "run my mod.ts file",
+      "allow": ["net", "read"]
+    }
+  },
+  "watcher": {
+    "exts": ["js", "jsx", "ts", "tsx", "json", "graphql","gql"]
+  }
+}

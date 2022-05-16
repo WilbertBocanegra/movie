@@ -29,7 +29,7 @@ export class DeleteService {
 
       return {
         statusCode: HttpStatus.OK,
-        message: 'Pelicula eliminada con exito',
+        message: 'Pelicula fue eliminada con exito',
         info: 'Successfully Request',
       };
     } catch (err) {
