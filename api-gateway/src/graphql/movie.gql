@@ -1,0 +1,38 @@
+# import UserType from './user.gql'
+# import IResponse from './interface.gql'
+
+extend type Query {
+  findAll: IResponseFindAllMovie
+}
+
+extend type Mutation {
+  createMovie(data: MovieInput!): ResponseTypeMovieMutation
+}
+
+type ResponseTypeMovieMutation implements IResponse {
+  statusCode: Int!
+  message: String
+  info: String!
+}
+
+type IResponseFindAllMovie implements IResponse {
+  statusCode: Int!
+  data: [MovieType]!
+  message: String
+  info: String!
+}
+
+type MovieType {
+  id: String
+  name: String
+  author: UserType
+  slug: String
+  description: String
+}
+
+input MovieInput {
+  name: String
+  author: String
+  slug: String
+  description: String
+}

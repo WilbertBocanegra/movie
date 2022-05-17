@@ -11,7 +11,7 @@ export class InsertService {
     try {
       await userSchema.validate(data);
 
-      const user = await this.insertRepository.create(data);
+      const user = this.insertRepository.create(data);
 
       await this.insertRepository.persistAndFlush(user);
 

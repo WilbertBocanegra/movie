@@ -4,65 +4,47 @@
 	import type { IUser } from '@enthous/movie';
 	let isDisable = false;
 	let errorMessage = '';
-	let data: IUser = {
-		email: '',
-		password: '',
+	let data = {
 		name: '',
 		lastName: '',
-		gender: 0
+		email: '',
+		password: '',
+		gender: 'MEN'
 	};
+	let isErrorAlert: boolean = false;
 
 	const handleSubmit = async () => {
 		isDisable = true;
-		try {
-			const req = await fetch('http://localhost:3005/graphql', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					query: `
-					query($data: LoginInput!){
-					login(data: $data){
-						statusCode
-						data {
-							id
-							name
-							lastName
-							email
-							password
-							status
-							rol
-							}
-						message
-						info
+
+		const req = await fetch('http://localhost:3005/graphql', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				query: `
+					mutation($data: SignInInput!) {
+						signUp(data: $data) {
+							info
+							message
+							statusCode
 						}
 					}
-					`,
-					variables: { data }
-				})
-			});
-			const res = await req.json();
-			//console.log(res.data.login);
-
-			if (
-				res.data.login.statusCode === '400' ||
-				res.data.login.statusCode === '401' ||
-				res.data.login.statusCode === '500'
-			) {
-				errorMessage = res.data.login.message;
-				setTimeout(() => {
-					errorMessage = '';
-				}, 3000);
-				isDisable = false;
-			}
-			if (res.data.login.statusCode === '200') {
-				goto('/home', { replaceState: true });
-			}
-		} catch (err) {
-			isDisable = false;
-			console.log(err);
+				`,
+				variables: { data }
+			})
+		});
+		const res = await req.json();
+		if (res.data.signUp.statusCode === 200) {
+			isErrorAlert = false;
+		} else {
+			isErrorAlert = true;
 		}
+		errorMessage = res.data.signUp.message;
+		isDisable = false;
+		setTimeout(() => {
+			errorMessage = '';
+		}, 3000);
 	};
 </script>
 
@@ -79,19 +61,32 @@
 			<form on:submit|preventDefault={handleSubmit}>
 				<div class="form-control mb-5">
 					<label for="email" class="label mb-1">
-						<span class="label-text">Correo</span>
+						<span class="label-text">Nombre/s</span>
 					</label>
 					<input
-						bind:value={data.email}
+						bind:value={data.name}
 						type="text"
-						placeholder="correo"
+						placeholder="nombre/s"
 						class="input input-bordered"
 						disabled={isDisable}
 					/>
 				</div>
 				<div class="form-control mb-5">
 					<label for="email" class="label mb-1">
-						<span class="label-text">Nombre/s</span>
+						<span class="label-text">Apellido/s</span>
+					</label>
+					<input
+						bind:value={data.lastName}
+						type="text"
+						placeholder="apellido/s"
+						class="input input-bordered"
+						disabled={isDisable}
+					/>
+				</div>
+
+				<div class="form-control mb-5">
+					<label for="email" class="label mb-1">
+						<span class="label-text">Correo</span>
 					</label>
 					<input
 						bind:value={data.email}
@@ -103,28 +98,6 @@
 				</div>
 
 				<div class="form-control mb-5">
-					<label for="email" class="label mb-1">
-						<span class="label-text">Apellido/s</span>
-					</label>
-					<input
-						bind:value={data.email}
-						type="text"
-						placeholder="correo"
-						class="input input-bordered"
-						disabled={isDisable}
-					/>
-				</div>
-				<div class="form-control mb-5">
-					<label for="email" class="label mb-1">
-						<span class="label-text">Genero</span>
-					</label>
-					<select class="select select-bordered w-full max-w-xs">
-						<option disabled selected>Seleccionar</option>
-						<option>Mujer</option>
-						<option>Hombre</option>
-					</select>
-				</div>
-				<div class="form-control mb-5">
 					<label for="password" class="label mb-1">
 						<span class="label-text">Contraseña</span>
 					</label>
@@ -135,6 +108,16 @@
 						class="input input-bordered"
 						disabled={isDisable}
 					/>
+				</div>
+				<div class="form-control mb-5">
+					<label for="email" class="label mb-1">
+						<span class="label-text">Genero</span>
+					</label>
+					<select class="select select-bordered w-full max-w-xs">
+						<option disabled selected>Seleccionar</option>
+						<option value="WOMEN">Mujer</option>
+						<option value="MAN">Hombre</option>
+					</select>
 				</div>
 				<div class="text-center">
 					<p class="my-5 text-center">
@@ -152,8 +135,13 @@
 		</div>
 	</div>
 </div>
+
 {#if errorMessage}
-	<div class="alert alert-error shadow-lg w-1/5	 absolute right-0 mr-10 mt-10">
+	<div
+		class="alert alert-{isErrorAlert
+			? 'error'
+			: 'success'} shadow-lg w-1/5	 absolute right-0 mr-10 mt-10"
+	>
 		<div>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

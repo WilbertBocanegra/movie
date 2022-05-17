@@ -6,7 +6,14 @@ const resolvers = {
     USER: 0,
     ADMIN: 1,
   },
-
+  GenderEnum: {
+    WOMEN: 0,
+    MEN: 1,
+  },
+  StatusEnum: {
+    DISABLED: 0,
+    ACTIVE: 1,
+  },
   Query,
   Mutation,
 };

@@ -1,7 +1,6 @@
 <script>
 	import '../app.css';
 	import { Drawer, DrawerContent } from '$lib/components';
-
 	import logo from '$lib/assets/enthous.jpg';
 </script>
 
@@ -14,9 +13,11 @@
 				<img src={logo} alt="logo enthous" />
 			</div>
 		</div>
-
 		<li>
-			<a href={undefined}> Usuarios </a>
+			<a href="home"> Inicio </a>
+		</li>
+		<li>
+			<a href="users"> Usuarios </a>
 		</li>
 	</DrawerContent>
 </Drawer>

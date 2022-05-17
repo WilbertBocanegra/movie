@@ -1,0 +1,8 @@
+enum RolEnum {
+  USER
+  ADMIN
+}
+
+
+
+

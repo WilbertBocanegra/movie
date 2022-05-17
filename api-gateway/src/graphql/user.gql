@@ -1,0 +1,29 @@
+# import RolEnum from './rol.gql'
+# import GenderEnum from './gender.gql'
+# import StatusEnum from './status.gql'
+# import MovieType from './movie.gql'
+# import IResponse from './interface.gql'
+
+extend type Query {
+  findAllUser: IResponseUser
+}
+
+type UserType {
+  id: String
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  rol: [RolEnum]
+  gender: GenderEnum
+  movies: [MovieType]
+  status: StatusEnum
+  access_token: String
+}
+
+type IResponseUser implements IResponse {
+  statusCode: Int!
+  data: [UserType]
+  message: String
+  info: String!
+}

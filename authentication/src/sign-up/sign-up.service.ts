@@ -21,11 +21,7 @@ export class SignUpService {
       );
       const user: IResponse = await res.json();
 
-      return {
-        statusCode: HttpStatus.OK,
-        info: 'Successfully Request',
-        message: user.message,
-      };
+      return user;
     } catch (err) {
       if (err instanceof Error) {
         throw new HttpException(

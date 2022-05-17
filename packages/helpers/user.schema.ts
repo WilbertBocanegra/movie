@@ -4,7 +4,7 @@ import { IUser } from "../interfaces";
 
 export const userSchema: SchemaOf<IUser> = object({
   requireId: boolean().default(false),
-  id: string().when("activeId", {
+  id: string().when("requireId", {
     is: true,
     then: (schema) => schema.required("El id es requerido"),
   }),
@@ -12,11 +12,14 @@ export const userSchema: SchemaOf<IUser> = object({
   lastName: string().required("El apellido es requerido"),
   requireEmail: boolean().default(true),
   email: string()
-    .email("Formato de correo invalido")
-    .when({
+    .when("requireEmail", {
       is: true,
-      then: (schema) => schema.required("El correo es requerido"),
-    }),
+      then: (schema) =>
+        schema
+          .email("Formato de correo invalido")
+          .required("El correo es requerido"),
+    })
+    .required("El correo es requerido"),
   password: string()
     .min(8, "El minimo de caracteres de contraseña es 8")
     .required("La contraseña es requerida"),

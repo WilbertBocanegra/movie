@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import logoEnthous from '$lib/assets/enthous.jpg';
 	let isDisable = false;
-	let errorMessage = '';
+	let errorMessage: string = '';
 	let data = {
 		email: '',
 		password: ''
@@ -10,14 +10,14 @@
 
 	const handleSubmit = async () => {
 		isDisable = true;
-		try {
-			const req = await fetch('http://localhost:3005/graphql', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					query: `
+
+		const req = await fetch('http://localhost:3005/graphql', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				query: `
 					query($data: LoginInput!){
 					login(data: $data){
 						statusCode
@@ -28,6 +28,7 @@
 							email
 							password
 							status
+							access_token
 							rol
 							}
 						message
@@ -35,29 +36,24 @@
 						}
 					}
 					`,
-					variables: { data }
-				})
-			});
-			const res = await req.json();
-			console.log(res.data.login);
+				variables: { data }
+			})
+		});
+		const res = await req.json();
 
-			if (
-				res.data.login.statusCode === '400' ||
-				res.data.login.statusCode === '401' ||
-				res.data.login.statusCode === '500'
-			) {
-				errorMessage = res.data.login.message;
-				setTimeout(() => {
-					errorMessage = '';
-				}, 3000);
-				isDisable = false;
-			}
-			if (res.data.login.statusCode === '200') {
-				goto('/home', { replaceState: true });
-			}
-		} catch (err) {
+		if (
+			res.data.login.statusCode === 400 ||
+			res.data.login.statusCode === 401 ||
+			res.data.login.statusCode === 500
+		) {
+			errorMessage = res.data.login.message;
+			setTimeout(() => {
+				errorMessage = '';
+			}, 3000);
 			isDisable = false;
-			console.log(err);
+		}
+		if (res.data.login.statusCode === 200) {
+			goto('/home', { replaceState: true });
 		}
 	};
 </script>
