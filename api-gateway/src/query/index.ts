@@ -1,4 +1,4 @@
-import { login} from "../auth/index.ts";
+import { login } from "../auth/index.ts";
 import { findAll } from "../movie/find.movie.ts";
 import { findAllUser } from "../user/findAllUser.ts";
 
@@ -7,6 +7,7 @@ const Query = {
 
   findAll,
   findAllUser,
+
 };
 
 export default Query;

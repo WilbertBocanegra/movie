@@ -54,6 +54,8 @@ export class UpdateService {
 
       const movieUpdate = this.movieRepository.assign(movie, data);
 
+      console.log(movieUpdate);
+
       await this.movieRepository.persistAndFlush(movieUpdate);
 
       return {

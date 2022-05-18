@@ -8,7 +8,7 @@ export const login = async (_: any, params: ILogin, ctx: { data: string }) => {
   );
   const user = await res.json();
 
-  console.log(user);
+  console.log(user,"hola");
 
   return user;
 };

@@ -1,0 +1,15 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1,
+    "workspacePrefix": "/home/bocanegra/Development/NestJS/movie"
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND",
+    "err": {
+      "name": "pnpm",
+      "message": "No package.json (or package.yaml, or package.json5) was found in \"/home/bocanegra/Development/NestJS/movie\".",
+      "code": "ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND",
+      "stack": "pnpm: No package.json (or package.yaml, or package.json5) was found in \"/home/bocanegra/Development/NestJS/movie\".\n    at readProjectManifest (/home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:19830:13)\n    at async Object.readProjectManifestOnly (/home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:19834:28)\n    at async readProjectManifestOnly (/home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:43827:24)\n    at async Object.handler (/home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:179191:24)\n    at async /home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:183470:21\n    at async run (/home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:183444:34)\n    at async runPnpm (/home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:183663:5)\n    at async /home/bocanegra/.local/share/pnpm/global/5/.pnpm/pnpm@6.32.12/node_modules/pnpm/dist/pnpm.cjs:183655:7"
+    }
+  }
+}

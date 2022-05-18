@@ -7,6 +7,8 @@ extend type Query {
 
 extend type Mutation {
   createMovie(data: MovieInput!): ResponseTypeMovieMutation
+  removeMovie(data: RemoveMovieInput!): ResponseTypeMovieMutation
+  updateMovie(data: MovieInsertInput!): ResponseTypeMovieMutation
 }
 
 type ResponseTypeMovieMutation implements IResponse {
@@ -31,6 +33,18 @@ type MovieType {
 }
 
 input MovieInput {
+  name: String
+  author: String
+  slug: String
+  description: String
+}
+
+input RemoveMovieInput {
+  id: String!
+}
+
+input MovieInsertInput {
+  id: String
   name: String
   author: String
   slug: String

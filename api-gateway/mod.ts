@@ -44,4 +44,6 @@ app.use(GraphQLService.routes());
 
 console.log("Server start at http://localhost:3005");
 
+console.log("hola")
+
 await app.listen({ port: 3005 });

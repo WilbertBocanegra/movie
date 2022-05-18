@@ -1,22 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { Navbar, NavLeft, NavRight, List } from '$lib/components';
+	import { onMount, SvelteComponent } from 'svelte';
+	import { Navbar, NavLeft, NavRight, List, Modal } from '$lib/components';
 	import { goto } from '$app/navigation';
 	import type { IMovie, IResponse, IUser } from '@enthous/movie';
+	import { movieDelete } from '$lib/services';
 
 	let movies: IMovie[] = [];
 	let authors: IUser[] = [];
+	let idRemove: string = '';
+	let modal: SvelteComponent;
 
-	const data = {
+	let isEdit: string = '';
+
+	let data: any = {
 		author: '',
 		name: '',
 		slug: '',
 		description: ''
 	};
 
-	let alertMessage: string = '';
-	let isErrorAlert: boolean = false;
+	let alertMessage: string;
 
+	let isErrorAlert: boolean;
+	$: console.log(isErrorAlert, alertMessage);
 	onMount(async () => {
 		const findAll = await fetch('http://localhost:3005/graphql', {
 			method: 'POST',
@@ -31,18 +37,22 @@
 							statusCode
 							message
 							data {
+								id
 								name
 								description
 								slug
 								author {
+									id
 									name
 									lastName
 								}
 							}
 						}
-					}`
+					}
+				`
 			})
 		});
+
 		const res = await findAll.json();
 
 		const findAllAuthor = await fetch('http://localhost:3005/graphql', {
@@ -75,13 +85,22 @@
 	});
 
 	const handleSubmit = async () => {
+		console.log('isEdit', isEdit);
 		const res = await fetch('http://localhost:3005/graphql', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				query: `
+				query: isEdit
+					? `mutation($data: MovieInsertInput!){
+						updateMovie(data: $data) {
+							info
+							message
+							statusCode
+						}
+					}`
+					: `
 					mutation($data: MovieInput!) {
 						createMovie(data: $data) {
 							info
@@ -95,17 +114,44 @@
 		});
 
 		const movieRes = await res.json();
-		if (movieRes.data.createMovie.statusCode === 200) {
-			isErrorAlert = false;
+		if (!isEdit) {
+			if (movieRes.data?.createMovie?.statusCode === 200) {
+				isErrorAlert = false;
+			} else {
+				isErrorAlert = true;
+			}
+			alertMessage = movieRes.data?.createMovie.message;
 		} else {
-			isErrorAlert = true;
+			if (movieRes.data?.updateMovie?.statusCode === 200) {
+				isErrorAlert = false;
+			} else {
+				isErrorAlert = true;
+			}
+
+			alertMessage = movieRes.data?.updateMovie.message;
 		}
-		alertMessage = movieRes.data.createMovie.message;
 
 		setTimeout(() => {
 			alertMessage = '';
 		}, 3000);
 	};
+
+	const handleRemove = async () => {
+		const messageRemove = await movieDelete(idRemove);
+		if (messageRemove.statusCode === 200) {
+			isErrorAlert = false;
+		} else {
+			isErrorAlert = true;
+		}
+		modal.close();
+		alertMessage = messageRemove.message || '';
+
+		setTimeout(() => {
+			alertMessage = '';
+		}, 3000);
+	};
+
+	$: console.log(data);
 </script>
 
 <Navbar>
@@ -139,13 +185,14 @@
 				tabindex="0"
 				class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-300 rounded-box w-52"
 			>
+				<!--
 				<li>
 					<a href={undefined} class="justify-between">
 						Perfil
-						<!--<span class="badge">New</span>-->
+						<span class="badge">New</span>
 					</a>
 				</li>
-				<li><a href={undefined}>Configuración</a></li>
+				<li><a href={undefined}>Configuración</a></li>-->
 				<li>
 					<a on:click={() => goto('/', { replaceState: true })} href={undefined}>Cerrar Sesión</a>
 				</li>
@@ -155,12 +202,44 @@
 </Navbar>
 
 <div class="grid grid-cols-3 gap-2 mt-10">
-	<div class="m-auto h-full relative ">
-		<div class="card w-96 bg-base-300 shadow-xl">
+	<div class="m-auto h-full  ">
+		<!-- Card  -->
+
+		<div class="card w-96 bg-base-300 shadow-xl ">
 			<div class="card-body">
+				{#if isEdit}
+					<div class="absolute right-5 top-5">
+						<button
+							on:click={() => {
+								(isEdit = ''),
+									(data = {
+										author: '',
+										name: '',
+										slug: '',
+										description: ''
+									});
+							}}
+							class="btn btn-circle"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-6 w-6"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								><path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M6 18L18 6M6 6l12 12"
+								/></svg
+							>
+						</button>
+					</div>
+				{/if}
 				<div class="normal-case text-xl text-center mb-5">Movie</div>
 				<form on:submit|preventDefault={handleSubmit}>
-					<div class="form-control">
+					<div class="form-control mb-5">
 						<label for="" class="label">
 							<span class="label-text">Nombre</span>
 						</label>
@@ -172,7 +251,7 @@
 						/>
 					</div>
 
-					<div class="form-control">
+					<div class="form-control mb-5 ">
 						<label for="" class="label">
 							<span class="label-text">Busqueda</span>
 						</label>
@@ -183,7 +262,7 @@
 							class="input input-bordered"
 						/>
 					</div>
-					<div class="form-control w-full max-w-xs">
+					<div class="form-control w-full max-w-xs mb-5">
 						<label for="" class="label">
 							<span class="label-text">Autor</span>
 						</label>
@@ -196,32 +275,65 @@
 						</select>
 					</div>
 
-					<div class="form-control">
+					<div class="form-control mb-5">
 						<label for="" class="label">
 							<span class="label-text">Descripción</span>
 						</label>
 						<textarea
 							bind:value={data.description}
-							class="textarea textarea-bordered"
+							class="textarea textarea-bordered h-40"
 							placeholder="descripción"
 						/>
 					</div>
-					<div class="form-control mt-6">
-						<button type="submit" class="btn btn-primary">aceptar</button>
+					<div class="form-control mb-5">
+						<button type="submit" class="btn btn-primary"
+							>{isEdit ? 'actualizar' : 'aceptar'}</button
+						>
 					</div>
 				</form>
 			</div>
 		</div>
+
+		<!-- Card -->
 	</div>
 	<!-- ... -->
-	<div class="col-span-2 relative w-full snap-y">
-		<div class="grid grid-cols-2 w-7/12	 gap-8 px-5 h-4/5 fixed overflow-auto snap-y">
+	<div class="col-span-2 w-full snap-y ">
+		<div class="grid grid-cols-2 w-7/12 overflow-auto gap-8 px-5 h-5/6 fixed ">
 			{#each movies as movie}
 				<div>
 					<!-- -->
 					<div class="card w-full bg-base-300">
 						<div class="absolute right-5 top-5">
-							<button class="btn btn-circle">
+							<button
+								on:click={() => {
+									(isEdit = movie.id || ''), (data = { ...movie, author: movie.author.id });
+								}}
+								href="#my-modal-2"
+								class="btn btn-circle mr-2"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="currentColor"
+									class="bi bi-pencil-square h-6 w-6"
+									viewBox="0 0 16 16"
+								>
+									<path
+										d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+									/>
+									<path
+										fill-rule="evenodd"
+										d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+									/>
+								</svg>
+							</button>
+
+							<a
+								on:click={() => {
+									(idRemove = movie.id || ''), modal.open();
+								}}
+								href="#my-modal-2"
+								class="btn btn-circle"
+							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									class="h-6 w-6"
@@ -235,25 +347,10 @@
 										d="M6 18L18 6M6 6l12 12"
 									/></svg
 								>
-							</button>
-							<button class="btn btn-circle">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-6 w-6"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									><path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M6 18L18 6M6 6l12 12"
-									/></svg
-								>
-							</button>
+							</a>
 						</div>
-						<div class="card-body ">
-							<h2 class="card-title text-center px-14">
+						<div class="card-body">
+							<h2 class="card-title text-center px-14 justify-center">
 								{movie.name}
 							</h2>
 
@@ -319,3 +416,13 @@
 		</div>
 	</div>
 {/if}
+
+<Modal bind:this={modal}>
+	<h3 class="font-bold text-lg text-center uppercase">alerta</h3>
+	<p class="py-4 text-center">Se eliminara para siempre</p>
+	<div class="modal-action justify-center">
+		<a href={undefined} on:click={handleRemove} class="btn mx-5">eliminar</a>
+
+		<button on:click={modal.close} class="btn btn-primary">cancelar</button>
+	</div>
+</Modal>

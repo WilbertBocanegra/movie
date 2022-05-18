@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, SvelteComponent } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Navbar, NavLeft, NavRight } from '$lib/components';
+	import { Navbar, NavLeft, NavRight, Modal } from '$lib/components';
 	import type { StatusEnum, IUser } from '@enthous/movie';
+	import About from '../about.svelte';
+
+	let modal: SvelteComponent;
+
 	let users: IUser[] = [];
 	onMount(async () => {
 		const findAllUser = await fetch('http://localhost:3005/graphql', {
@@ -68,13 +72,14 @@
 				tabindex="0"
 				class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-300 rounded-box w-52"
 			>
-				<li>
+				<!--<li>
 					<a href={undefined} class="justify-between">
 						Perfil
-						<!--<span class="badge">New</span>-->
+						<span class="badge">New</span>
 					</a>
 				</li>
 				<li><a href={undefined}>Configuración</a></li>
+			-->
 				<li>
 					<a on:click={() => goto('/', { replaceState: true })} href={undefined}>Cerrar Sesión</a>
 				</li>
@@ -88,22 +93,7 @@
 		<div>
 			<div class="card w-full bg-base-300  shadow-xl">
 				<div class="card-body">
-					<a href="#my-modal-2" class="btn btn-circle absolute right-5 top-5">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="h-6 w-6"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
-							/></svg
-						>
-					</a>
-					<button class="btn btn-circle absolute right-5 top-20">
+					<button on:click={modal.open} class="btn btn-circle absolute right-5 top-5">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							class="h-6 w-6"
@@ -118,7 +108,26 @@
 							/></svg
 						>
 					</button>
-					<h2 class="card-title text-center px-10 mb-5">{user.name} {user.lastName}</h2>
+					<button class="btn btn-circle absolute right-5 top-20">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="currentColor"
+							class="bi bi-pencil-square h-6 w-6"
+							viewBox="0 0 16 16"
+						>
+							<path
+								d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+							/>
+						</svg>
+					</button>
+					<h2 class="card-title text-center px-10 mb-5 justify-center">
+						{user.name}
+						{user.lastName}
+					</h2>
 
 					<div class="avatar justify-center my-5">
 						<div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
@@ -190,15 +199,12 @@
 	{/each}
 </main>
 
-<div class="modal " id="my-modal-2">
-	<div class="modal-box">
-		<h3 class="font-bold text-lg text-center mb-5">¿Deseas eliminar este usuario?</h3>
-		<!--<p class="py-4 px-5">
-			You've been selected for a chance to get one year of subscription to use Wikipedia for free!
-		</p>-->
-		<div class="modal-action justify-end">
-			<a href="#" class="btn btn-primary">aceptar</a>
-			<a href="#" class="btn btn-error">cancelar</a>
-		</div>
+<Modal bind:this={modal}>
+	<h3 class="font-bold text-lg text-center uppercase">alerta</h3>
+	<p class="py-4 text-center">Se eliminara para siempre</p>
+	<div class="modal-action justify-center">
+		<button class="btn mx-5">eliminar</button>
+
+		<button on:click={modal.close} class="btn btn-primary">cancelar</button>
 	</div>
-</div>
+</Modal>

@@ -11,6 +11,8 @@
 	const handleSubmit = async () => {
 		isDisable = true;
 
+		errorMessage = '';
+
 		const req = await fetch('http://localhost:3005/graphql', {
 			method: 'POST',
 			headers: {
